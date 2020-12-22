@@ -1,1 +1,1 @@
-# discord-bot-for-anilist
+# Discord bot for AniList
