@@ -20,6 +20,10 @@ client.on("message", async (message) => {
     mediaQuery(message, rest, "anime");
   } else if (command === "manga") {
     mediaQuery(message, rest, "manga");
+  } else if (command === "anime-c") {
+    /* send the characters of an anime in a grid */
+  } else if (command === "manga-c") {
+    /* send the characters of a manga in a grid */
   }
 });
 

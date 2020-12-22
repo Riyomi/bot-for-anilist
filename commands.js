@@ -15,23 +15,8 @@ exports.characterQuery = (message, name) => {
 
   fetch(apiUrl, options)
     .then(handleResponse)
-    .then((data) => {
-      const character_info = data.data.Character;
-      const image_url = data.data.Character.image.large;
-
-      const exampleEmbed = new Discord.MessageEmbed()
-        .setColor("#0099ff")
-        .setAuthor(
-          "Some name",
-          "https://i.imgur.com/wSTFkRM.png",
-          "https://discord.js.org"
-        )
-        .setTitle(character_info.name.full)
-        .setDescription(`Favorites: ${character_info.favourites}`)
-        .setImage(image_url);
-      message.channel.send(exampleEmbed);
-    })
-    .catch((error) => console.error(error));
+    .then((data) => displayCharacterData(message, data))
+    .catch((error) => displayErrorMessage(message, error));
 };
 
 exports.mediaQuery = (message, title, type) => {
@@ -44,15 +29,45 @@ exports.mediaQuery = (message, title, type) => {
 
   fetch(apiUrl, options)
     .then(handleResponse)
-    .then((data) => {
-      const mediaInfo = data.data.Media;
-      const imageUrl = `${mediaUrl}/${mediaInfo.id}`;
-
-      const exampleEmbed = new Discord.MessageEmbed()
-        .setColor("#0099ff")
-        .setTitle(mediaInfo.title.romaji)
-        .setImage(imageUrl);
-      message.channel.send(exampleEmbed);
-    })
-    .catch((error) => message.channel.send(error.message));
+    .then((data) => displayMediaData(message, data))
+    .catch((error) => displayErrorMessage(message, error));
 };
+
+function displayCharacterData(message, data) {
+  const character_info = data.data.Character;
+  const image_url = data.data.Character.image.large;
+
+  const exampleEmbed = new Discord.MessageEmbed()
+    .setColor("#0099ff")
+    .setAuthor(
+      "AniList",
+      "https://anilist.co/favicon.ico",
+      "https://anilist.co/"
+    )
+    .setTitle(character_info.name.full)
+    .setDescription(`Favorites: ${character_info.favourites}`)
+    .setImage(image_url);
+
+  message.channel.send(exampleEmbed);
+}
+
+function displayMediaData(message, data) {
+  const mediaInfo = data.data.Media;
+  const imageUrl = `${mediaUrl}/${mediaInfo.id}`;
+
+  const exampleEmbed = new Discord.MessageEmbed()
+    .setColor("#0099ff")
+    .setAuthor(
+      "AniList",
+      "https://anilist.co/favicon.ico",
+      "https://anilist.co/"
+    )
+    .setTitle(mediaInfo.title.romaji)
+    .setImage(imageUrl);
+
+  message.channel.send(exampleEmbed);
+}
+
+function displayErrorMessage(message, error) {
+  message.channel.send(error.message);
+}
