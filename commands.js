@@ -11,7 +11,7 @@ exports.characterQuery = (message, name) => {
     name: name,
   };
 
-  const options = getOptions(queries.character_query, variables);
+  const options = getOptions(queries.characterQuery, variables);
 
   fetch(apiUrl, options)
     .then(handleResponse)
@@ -24,7 +24,7 @@ exports.mediaQuery = (message, title, type) => {
     title: title,
   };
 
-  const query = type === "anime" ? queries.anime_query : queries.manga_query;
+  const query = type === "anime" ? queries.animeQuery : queries.mangaQuery;
   const options = getOptions(query, variables);
 
   fetch(apiUrl, options)
@@ -34,28 +34,28 @@ exports.mediaQuery = (message, title, type) => {
 };
 
 function displayCharacterData(message, data) {
-  const character_info = data.data.Character;
-  const image_url = data.data.Character.image.large;
+  const characterInfo = data.data.Character;
+  const imageUrl = data.data.Character.image.large;
 
-  const exampleEmbed = new Discord.MessageEmbed()
+  const embed = new Discord.MessageEmbed()
     .setColor("#0099ff")
     .setAuthor(
       "AniList",
       "https://anilist.co/favicon.ico",
       "https://anilist.co/"
     )
-    .setTitle(character_info.name.full)
-    .setDescription(`Favorites: ${character_info.favourites}`)
-    .setImage(image_url);
+    .setTitle(characterInfo.name.full)
+    .setDescription(`Favorites: ${characterInfo.favourites}`)
+    .setImage(imageUrl);
 
-  message.channel.send(exampleEmbed);
+  message.channel.send(embed);
 }
 
 function displayMediaData(message, data) {
   const mediaInfo = data.data.Media;
   const imageUrl = `${mediaUrl}/${mediaInfo.id}`;
 
-  const exampleEmbed = new Discord.MessageEmbed()
+  const embed = new Discord.MessageEmbed()
     .setColor("#0099ff")
     .setAuthor(
       "AniList",
@@ -65,7 +65,7 @@ function displayMediaData(message, data) {
     .setTitle(mediaInfo.title.romaji)
     .setImage(imageUrl);
 
-  message.channel.send(exampleEmbed);
+  message.channel.send(embed);
 }
 
 function displayErrorMessage(message, error) {

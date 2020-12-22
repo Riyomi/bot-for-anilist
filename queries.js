@@ -1,4 +1,4 @@
-exports.character_query = `
+exports.characterQuery = `
 query ($name: String) {
   Character (search: $name) {
     name {
@@ -13,7 +13,7 @@ query ($name: String) {
 }
 `;
 
-exports.anime_query = `
+exports.animeQuery = `
 query ($title: String) {
   Media (search: $title, type: ANIME) {
     id
@@ -24,7 +24,7 @@ query ($title: String) {
 }
 `;
 
-exports.manga_query = `
+exports.mangaQuery = `
 query ($title: String) {
   Media (search: $title, type: MANGA) {
     id
