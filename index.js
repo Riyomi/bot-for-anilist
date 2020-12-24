@@ -1,7 +1,11 @@
 const Discord = require("discord.js");
 const { token } = require("./config.json");
-const { characterQuery, mediaQuery } = require("./commands.js");
-const { getArgs, getCommand } = require("./utils.js");
+const {
+  characterQuery,
+  mediaQuery,
+  mediaCharactersQuery,
+} = require("./commands");
+const { getArgs, getCommand } = require("./utils");
 
 const client = new Discord.Client();
 
@@ -21,9 +25,13 @@ client.on("message", async (message) => {
   } else if (command === "manga") {
     mediaQuery(message, rest, "manga");
   } else if (command === "anime-c") {
-    /* send the characters of an anime in a grid */
+    mediaCharactersQuery(message, rest, "anime");
   } else if (command === "manga-c") {
-    /* send the characters of a manga in a grid */
+    mediaCharactersQuery(message, rest, "manga");
+  } else if (command === "anime-r") {
+    mediaCharactersQuery(message, rest, "manga");
+  } else if (command === "manga-r") {
+    mediaCharactersQuery(message, rest, "manga");
   }
 });
 

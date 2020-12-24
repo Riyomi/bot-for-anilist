@@ -1,7 +1,7 @@
 const fetch = require("node-fetch");
 const Discord = require("discord.js");
-const queries = require("./queries.js");
-const { handleResponse, getOptions } = require("./utils.js");
+const queries = require("./queries");
+const { handleResponse, getOptions } = require("./utils");
 
 const apiUrl = "https://graphql.anilist.co";
 const mediaUrl = "https://img.anili.st/media";
@@ -33,7 +33,25 @@ exports.mediaQuery = (message, title, type) => {
     .catch((error) => displayErrorMessage(message, error));
 };
 
-function displayCharacterData(message, data) {
+exports.mediaCharactersQuery = (message, title, type, numOfCharacters = 5) => {
+  const variables = {
+    title: title,
+    numOfCharacters: numOfCharacters,
+  };
+
+  const query =
+    type === "anime"
+      ? queries.animeCharactersQuery
+      : queries.mangaCharactersQuery;
+  const options = getOptions(query, variables);
+
+  fetch(apiUrl, options)
+    .then(handleResponse)
+    .then((data) => displayMediaCharactersData(message, data))
+    .catch((error) => displayErrorMessage(message, error));
+};
+
+const displayCharacterData = (message, data) => {
   const characterInfo = data.data.Character;
   const imageUrl = data.data.Character.image.large;
 
@@ -49,9 +67,9 @@ function displayCharacterData(message, data) {
     .setImage(imageUrl);
 
   message.channel.send(embed);
-}
+};
 
-function displayMediaData(message, data) {
+const displayMediaData = (message, data) => {
   const mediaInfo = data.data.Media;
   const imageUrl = `${mediaUrl}/${mediaInfo.id}`;
 
@@ -66,8 +84,43 @@ function displayMediaData(message, data) {
     .setImage(imageUrl);
 
   message.channel.send(embed);
-}
+};
 
-function displayErrorMessage(message, error) {
-  message.channel.send(error.message);
-}
+const displayMediaCharactersData = (message, data) => {
+  const title = data.data.Media.title.romaji;
+  const characters = data.data.Media.characters.nodes;
+
+  const embed = new Discord.MessageEmbed()
+    .setColor("#0099ff")
+    .setAuthor(
+      "AniList",
+      "https://anilist.co/favicon.ico",
+      "https://anilist.co/"
+    )
+    .setTitle(title)
+    .addFields(
+      characters.map((character) => {
+        return {
+          name: character.name.full,
+          value: character.favourites,
+          inline: true,
+        };
+      })
+    );
+  const embeds = characters.map((character) => {
+    return new Discord.MessageEmbed()
+      .setTitle(character.name.full)
+      .setDescription(`Favorites: ${character.favourites}`)
+      .setImage(character.image.medium);
+  });
+
+  embeds.forEach((embed) => {
+    message.channel.send(embed);
+  });
+};
+
+const displayErrorMessage = (message, error) => {
+  message.channel.send(
+    error.errors[0] ? error.errors[0].message : "An error occured"
+  );
+};

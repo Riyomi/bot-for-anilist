@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "axios": "^0.21.0",
+    "canvas": "^2.6.1",
     "discord.js": "^12.5.1",
     "node-fetch": "^2.6.1"
   },

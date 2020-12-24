@@ -34,3 +34,45 @@ query ($title: String) {
   }
 }
 `;
+
+exports.animeCharactersQuery = `
+query ($title: String, $numOfCharacters: Int) {
+  Media(search: $title, type: ANIME) {
+    title {
+      romaji
+    }
+    characters(sort: FAVOURITES_DESC, perPage: $numOfCharacters) {
+      nodes {
+        name {
+          full
+        }
+        image {
+          medium
+        }
+        favourites
+      }
+    }
+  }
+}
+`;
+
+exports.mangaCharactersQuery = `
+query ($title: String, $numOfCharacters: Int) {
+  Media(search: $title, type: MANGA) {
+    title {
+      romaji
+    }
+    characters(sort: FAVOURITES_DESC, perPage: $numOfCharacters) {
+      nodes {
+        name {
+          full
+        }
+        image {
+          medium
+        }
+        favourites
+      }
+    }
+  }
+}
+`;
