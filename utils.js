@@ -21,10 +21,10 @@ exports.getOptions = (query, variables) => {
   return options;
 };
 
-exports.getArgs = (message) => {
-  return message.content.slice(prefix.length).trim();
-};
+exports.parseArgs = (message) => {
+  const arguments = message.content.slice(prefix.length).trim();
+  const command = arguments.slice(0, arguments.indexOf(" ")).toLowerCase();
+  const args = arguments.slice(arguments.indexOf(" ")).trim().toLowerCase();
 
-exports.getCommand = (args) => {
-  return args.slice(0, args.indexOf(" ")).toLowerCase();
+  return { command, args };
 };

@@ -6,7 +6,7 @@ const {
   mediaQuery,
   mediaCharactersQuery,
 } = require("./commands");
-const { getArgs, getCommand } = require("./utils");
+const { parseArgs } = require("./utils");
 
 const client = new Discord.Client();
 
@@ -15,26 +15,27 @@ client.once("ready", () => {
 });
 
 client.on("message", async (message) => {
-  const args = getArgs(message);
-  const command = getCommand(args);
-  const rest = args.slice(args.indexOf(" ")).trim().toLowerCase();
+  const { command, args } = parseArgs(message);
 
-  if (command === "character") {
-    characterQuery(message, rest);
-  } else if (command === "anime") {
-    mediaQuery(message, rest, "anime");
-  } else if (command === "manga") {
-    mediaQuery(message, rest, "manga");
-  } else if (command === "user") {
-    userQuery(message, rest);
-  } else if (command === "anime-c") {
-    mediaCharactersQuery(message, rest, "anime");
-  } else if (command === "manga-c") {
-    mediaCharactersQuery(message, rest, "manga");
-  } else if (command === "anime-r") {
-    mediaCharactersQuery(message, rest, "manga");
-  } else if (command === "manga-r") {
-    mediaCharactersQuery(message, rest, "manga");
+  switch (command) {
+    case "character":
+      characterQuery(message, args);
+      break;
+    case "anime":
+      mediaQuery(message, args, "anime");
+      break;
+    case "manga":
+      mediaQuery(message, args, "manga");
+      break;
+    case "user":
+      userQuery(message, args);
+      break;
+    case "anime-c":
+      mediaCharactersQuery(message, args, "anime");
+      break;
+    case "manga-c":
+      mediaCharactersQuery(message, args, "manga");
+      break;
   }
 });
 
