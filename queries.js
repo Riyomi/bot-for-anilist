@@ -35,6 +35,44 @@ query ($title: String) {
 }
 `;
 
+exports.userQuery = `
+query ($name: String) {
+  User(search: $name) {
+    name
+    bannerImage
+    avatar {
+      medium
+    }
+    favourites {
+      anime {
+        nodes {
+          title {
+            romaji
+          }
+        }
+      }
+      manga {
+        nodes {
+          title {
+            romaji
+          }
+        }
+      }
+      characters {
+        nodes {
+          name {
+            full
+          },
+          image {
+            medium
+          }
+        }
+      }
+    }
+  }
+}
+`;
+
 exports.animeCharactersQuery = `
 query ($title: String, $numOfCharacters: Int) {
   Media(search: $title, type: ANIME) {

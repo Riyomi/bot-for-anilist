@@ -2,6 +2,7 @@ const Discord = require("discord.js");
 const { token } = require("./config.json");
 const {
   characterQuery,
+  userQuery,
   mediaQuery,
   mediaCharactersQuery,
 } = require("./commands");
@@ -24,6 +25,8 @@ client.on("message", async (message) => {
     mediaQuery(message, rest, "anime");
   } else if (command === "manga") {
     mediaQuery(message, rest, "manga");
+  } else if (command === "user") {
+    userQuery(message, rest);
   } else if (command === "anime-c") {
     mediaCharactersQuery(message, rest, "anime");
   } else if (command === "manga-c") {
