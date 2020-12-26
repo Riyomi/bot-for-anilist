@@ -5,6 +5,7 @@ const { handleResponse, getOptions } = require("./utils");
 
 const apiUrl = "https://graphql.anilist.co";
 const mediaUrl = "https://img.anili.st/media";
+const minFavesToDisplayChar = 300;
 
 exports.characterQuery = (message, name) => {
   const variables = {
@@ -47,7 +48,19 @@ exports.mediaQuery = (message, title, type) => {
     .catch((error) => displayErrorMessage(message, error));
 };
 
-exports.mediaCharactersQuery = (message, title, type, numOfCharacters = 5) => {
+exports.animeQuery = (message, title) =>
+  this.mediaQuery(message, title, "anime");
+
+exports.mangaQuery = (message, title) =>
+  this.mediaQuery(message, title, "manga");
+
+exports.animeCharactersQuery = (message, title, numOfCharacters = 5) =>
+  this.mediaCharactersQuery(message, title, "anime", numOfCharacters);
+
+exports.mangaCharactersQuery = (message, title, numOfCharacters = 5) =>
+  this.mediaCharactersQuery(message, title, "manga", numOfCharacters);
+
+exports.mediaCharactersQuery = (message, title, type, numOfCharacters) => {
   const variables = {
     title: title,
     numOfCharacters: numOfCharacters,
@@ -161,11 +174,15 @@ const displayMediaCharactersData = (message, data) => {
         };
       })
     );
-  const embeds = characters.map((character) => {
-    return new Discord.MessageEmbed()
-      .setTitle(character.name.full)
-      .setDescription(`Favorites: ${character.favourites}`)
-      .setImage(character.image.medium);
+  var embeds = [];
+  characters.map((character) => {
+    if (character.favourites >= minFavesToDisplayChar)
+      embeds.push(
+        new Discord.MessageEmbed()
+          .setTitle(character.name.full)
+          .setDescription(`Favorites: ${character.favourites}`)
+          .setImage(character.image.medium)
+      );
   });
 
   embeds.forEach((embed) => {

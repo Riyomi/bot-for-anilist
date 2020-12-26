@@ -1,4 +1,4 @@
-const { prefix } = require("./config.json");
+const PREFIX = "!";
 
 exports.handleResponse = (response) => {
   return response.json().then(function (json) {
@@ -22,9 +22,10 @@ exports.getOptions = (query, variables) => {
 };
 
 exports.parseArgs = (message) => {
-  const arguments = message.content.slice(prefix.length).trim();
-  const command = arguments.slice(0, arguments.indexOf(" ")).toLowerCase();
-  const args = arguments.slice(arguments.indexOf(" ")).trim().toLowerCase();
+  const arguments = message.content.slice(PREFIX.length).trim().toLowerCase();
+
+  const command = arguments.slice(0, arguments.indexOf(" "));
+  const args = arguments.slice(arguments.indexOf(" ")).trim();
 
   return { command, args };
 };
