@@ -1,12 +1,12 @@
 const fetch = require("node-fetch");
 const Discord = require("discord.js");
 const queries = require("./queries");
-const { handleResponse, getOptions } = require("./utils");
+const { handleResponse, getOptions, convertStringToColor } = require("./utils");
 const _ = require("lodash");
+const { token } = require("./config.json");
 
 const apiUrl = "https://graphql.anilist.co";
 const mediaUrl = "https://img.anili.st/media";
-const minFavesToDisplayChar = 300;
 
 exports.characterQuery = (message, name) => {
   const variables = {
@@ -70,7 +70,7 @@ exports.mediaQuery = (message, title, query) => {
 
 /* Media character queries */
 
-exports.animeCharactersQuery = (message, title, numOfCharacters = 5) =>
+exports.animeCharactersQuery = (message, title, numOfCharacters = 10) =>
   this.mediaCharactersQuery(
     message,
     title,
@@ -78,7 +78,7 @@ exports.animeCharactersQuery = (message, title, numOfCharacters = 5) =>
     numOfCharacters
   );
 
-exports.mangaCharactersQuery = (message, title, numOfCharacters = 5) =>
+exports.mangaCharactersQuery = (message, title, numOfCharacters = 10) =>
   this.mediaCharactersQuery(
     message,
     title,
@@ -105,7 +105,6 @@ const displayCharacterData = (message, data) => {
   const imageUrl = data.data.Character.image.large;
 
   const embed = new Discord.MessageEmbed()
-    .setColor("#0099ff")
     .setAuthor(
       "AniList",
       "https://anilist.co/favicon.ico",
@@ -131,6 +130,7 @@ const displayUserFaves = (message, data) => {
       "https://anilist.co/favicon.ico",
       "https://anilist.co/"
     )
+    .setColor(convertStringToColor(userInfo.options.profileColor))
     .setTitle(userInfo.name)
     .setThumbnail(avatarUrl);
 
@@ -168,6 +168,7 @@ const displayUserData = (message, data) => {
       "https://anilist.co/"
     )
     .setTitle(userInfo.name)
+    .setColor(convertStringToColor(userInfo.options.profileColor))
     .setThumbnail(avatarUrl)
     .addField(
       "Anime statistics",
@@ -188,7 +189,7 @@ const displayMediaData = (message, data) => {
   const imageUrl = `${mediaUrl}/${mediaInfo.id}`;
 
   const embed = new Discord.MessageEmbed()
-    .setColor("#0099ff")
+    .setColor(mediaInfo.coverImage.color)
     .setAuthor(
       "AniList",
       "https://anilist.co/favicon.ico",
@@ -201,24 +202,28 @@ const displayMediaData = (message, data) => {
 };
 
 const displayMediaCharactersData = (message, data) => {
+  const mediaInfo = data.data.Media;
   const characters = data.data.Media.characters.nodes;
 
-  var embeds = [];
-  characters.map((character) => {
-    if (character.favourites >= minFavesToDisplayChar)
-      embeds.push(
-        new Discord.MessageEmbed()
-          .setTitle(character.name.full)
-          .setDescription(`Favorites: ${character.favourites}`)
-          .setImage(character.image.medium)
-      );
-  });
+  const embed = new Discord.MessageEmbed()
+    .setAuthor(
+      "AniList",
+      "https://anilist.co/favicon.ico",
+      "https://anilist.co/"
+    )
+    .setDescription(
+      characters.map(
+        (c, index) => `${index + 1}. ${c.name.full} [${c.favourites}]`
+      )
+    )
+    .setTitle(`Top ${mediaInfo.title.romaji} characters`)
+    .setThumbnail(characters[0].image.medium);
 
-  embeds.forEach((embed) => message.channel.send(embed));
+  message.channel.send(embed);
 };
 
 const displayErrorMessage = (message, error) => {
   message.channel.send(
-    error.errors[0] ? error.errors[0].message : "An error occured"
+    error.errors[0] ? error.errors[0].message : "An error occured."
   );
 };

@@ -31,3 +31,21 @@ exports.parseArgs = (message) => {
 
   return { command, args };
 };
+
+exports.convertStringToColor = (color) => {
+  let hexRegex = /^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/;
+
+  if (color.match(hexRegex)) return color;
+
+  colors = [
+    { name: "blue", value: "#3db4f2" },
+    { name: "purple", value: "#c063ff" },
+    { name: "green", value: "#4cca51" },
+    { name: "orange", value: "#ef881a" },
+    { name: "red", value: "#e13333" },
+    { name: "pink", value: "#fc9dd6" },
+    { name: "gray", value: "#677b94" },
+  ];
+
+  return colors.find((c) => c.name === color).value;
+};

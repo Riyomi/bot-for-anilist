@@ -3,7 +3,6 @@ query ($name: String) {
   Character (search: $name) {
     name {
       full
-      native
     }
     image {
       large
@@ -20,6 +19,9 @@ query ($title: String) {
     title {
       romaji
     }
+    coverImage {
+      color
+    }
   }
 }
 `;
@@ -31,6 +33,9 @@ query ($title: String) {
     title {
       romaji
     }
+    coverImage {
+      color
+    }
   }
 }
 `;
@@ -41,6 +46,9 @@ query ($name: String) {
     name
     avatar {
       medium
+    }
+    options {
+      profileColor
     }
     statistics{
       anime {
@@ -65,22 +73,25 @@ query ($name: String) {
     avatar {
       medium
     }
+    options {
+      profileColor
+    }
     favourites {
-      anime {
+      anime(perPage: 5) {
         nodes {
           title {
             romaji
           }
         }
       }
-      manga {
+      manga(perPage: 5) {
         nodes {
           title {
             romaji
           }
         }
       }
-      characters {
+      characters(perPage: 5) {
         nodes {
           name {
             full

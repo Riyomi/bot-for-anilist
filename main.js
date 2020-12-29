@@ -5,17 +5,20 @@ const { parseArgs } = require("./utils");
 
 const client = new Discord.Client();
 
-//TODO: add airing anime command
-
-//TODO: this should be imported from a different module
+// this shouldn't be here
 const commands = [
   {
     command: "help",
     execute: help,
-    description: "lists all available commands",
+    description: "list of available commands",
   },
   {
-    command: "character",
+    command: "clear",
+    execute: clearAll,
+    description: "deletes all bot related messages in the current channel",
+  },
+  {
+    command: "char",
     execute: functions.characterQuery,
     description: "information about a character",
   },
@@ -25,7 +28,7 @@ const commands = [
     description: "information about a user",
   },
   {
-    command: "user-faves",
+    command: "user-f",
     execute: functions.userFavesQuery,
     description: "favorite anime, manga and characters of a user",
   },
@@ -42,22 +45,31 @@ const commands = [
   {
     command: "anime-c",
     execute: functions.animeCharactersQuery,
-    description: "characters of an anime (max. 5, sorted by popularity)",
+    description: "top 10 characters of the given anime sorted by popularity",
   },
   {
     command: "manga-c",
     execute: functions.mangaCharactersQuery,
-    description: "characters of a manga (max. 5, sorted by popularity)",
+    description: "top 10 characters of the given manga sorted by popularity",
   },
 ];
 
-//TODO: this too
-//TODO: format the message (use either a code block or embed)
+// this shouldn't be here
 function help(message, args) {
   const embed = new Discord.MessageEmbed()
     .setTitle("Available commands")
     .setDescription(commands.map((c) => `**!${c.command}**: ${c.description}`));
   message.channel.send(embed);
+}
+
+// this shouldn't be here
+async function clearAll(message, args) {
+  const fetchedMessages = await message.channel.messages.fetch({ limit: 100 });
+  const messagesForDeletion = fetchedMessages.filter(
+    (m) => m.content.startsWith("!") || m.author.id === client.user.id
+  );
+
+  message.channel.bulkDelete(messagesForDeletion);
 }
 
 client.once("ready", () => {
