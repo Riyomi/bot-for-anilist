@@ -2,6 +2,7 @@ const fetch = require("node-fetch");
 const Discord = require("discord.js");
 const queries = require("./queries");
 const { handleResponse, getOptions } = require("./utils");
+const _ = require("lodash");
 
 const apiUrl = "https://graphql.anilist.co";
 const mediaUrl = "https://img.anili.st/media";
@@ -25,7 +26,6 @@ exports.userQuery = (message, name) => {
     name: name,
   };
 
-  console.log(name);
   const options = getOptions(queries.userQuery, variables);
 
   fetch(apiUrl, options)
@@ -34,12 +34,32 @@ exports.userQuery = (message, name) => {
     .catch((error) => displayErrorMessage(message, error));
 };
 
-exports.mediaQuery = (message, title, type) => {
+exports.userFavesQuery = (message, name) => {
+  const variables = {
+    name: name,
+  };
+
+  const options = getOptions(queries.userFavesQuery, variables);
+
+  fetch(apiUrl, options)
+    .then(handleResponse)
+    .then((data) => displayUserFaves(message, data))
+    .catch((error) => displayErrorMessage(message, error));
+};
+
+/* Media queries */
+
+exports.animeQuery = (message, title) =>
+  this.mediaQuery(message, title, queries.animeQuery);
+
+exports.mangaQuery = (message, title) =>
+  this.mediaQuery(message, title, queries.mangaQuery);
+
+exports.mediaQuery = (message, title, query) => {
   const variables = {
     title: title,
   };
 
-  const query = type === "anime" ? queries.animeQuery : queries.mangaQuery;
   const options = getOptions(query, variables);
 
   fetch(apiUrl, options)
@@ -48,28 +68,30 @@ exports.mediaQuery = (message, title, type) => {
     .catch((error) => displayErrorMessage(message, error));
 };
 
-exports.animeQuery = (message, title) =>
-  this.mediaQuery(message, title, "anime");
-
-exports.mangaQuery = (message, title) =>
-  this.mediaQuery(message, title, "manga");
+/* Media character queries */
 
 exports.animeCharactersQuery = (message, title, numOfCharacters = 5) =>
-  this.mediaCharactersQuery(message, title, "anime", numOfCharacters);
+  this.mediaCharactersQuery(
+    message,
+    title,
+    queries.animeCharactersQuery,
+    numOfCharacters
+  );
 
 exports.mangaCharactersQuery = (message, title, numOfCharacters = 5) =>
-  this.mediaCharactersQuery(message, title, "manga", numOfCharacters);
+  this.mediaCharactersQuery(
+    message,
+    title,
+    queries.mangaCharactersQuery,
+    numOfCharacters
+  );
 
-exports.mediaCharactersQuery = (message, title, type, numOfCharacters) => {
+exports.mediaCharactersQuery = (message, title, query, numOfCharacters) => {
   const variables = {
     title: title,
     numOfCharacters: numOfCharacters,
   };
 
-  const query =
-    type === "anime"
-      ? queries.animeCharactersQuery
-      : queries.mangaCharactersQuery;
   const options = getOptions(query, variables);
 
   fetch(apiUrl, options)
@@ -96,7 +118,7 @@ const displayCharacterData = (message, data) => {
   message.channel.send(embed);
 };
 
-const displayUserData = (message, data) => {
+const displayUserFaves = (message, data) => {
   const userInfo = data.data.User;
   const avatarUrl = userInfo.avatar.medium;
   const favoriteAnime = userInfo.favourites.anime.nodes.slice(0, 5);
@@ -115,23 +137,48 @@ const displayUserData = (message, data) => {
   if (favoriteAnime.length > 0) {
     embed.addField(
       "Favorite anime",
-      favoriteAnime.map((anime) => anime.title.romaji)
+      favoriteAnime.map((anime) => _.truncate(anime.title.romaji))
     );
   }
   if (favoriteManga.length > 0) {
     embed.addField(
       "Favorite manga",
-      favoriteManga.map((manga) => manga.title.romaji),
+      favoriteManga.map((manga) => _.truncate(manga.title.romaji)),
       true
     );
   }
   if (favoriteCharacters.length > 0) {
     embed.addField(
       "Favorite characters",
-      favoriteCharacters.map((characters) => characters.name.full),
+      favoriteCharacters.map((character) => character.name.full),
       true
     );
   }
+  message.channel.send(embed);
+};
+
+const displayUserData = (message, data) => {
+  const userInfo = data.data.User;
+  const avatarUrl = userInfo.avatar.medium;
+
+  const embed = new Discord.MessageEmbed()
+    .setAuthor(
+      "AniList",
+      "https://anilist.co/favicon.ico",
+      "https://anilist.co/"
+    )
+    .setTitle(userInfo.name)
+    .setThumbnail(avatarUrl)
+    .addField(
+      "Anime statistics",
+      `Total anime: ${userInfo.statistics.anime.count}\nMean score: ${userInfo.statistics.anime.meanScore}\nEpisodes: ${userInfo.statistics.anime.episodesWatched}`,
+      true
+    )
+    .addField(
+      "Manga statistics",
+      `Total manga: ${userInfo.statistics.manga.count}\nMean score: ${userInfo.statistics.manga.meanScore}\nChapters: ${userInfo.statistics.manga.chaptersRead}`,
+      true
+    );
 
   message.channel.send(embed);
 };
@@ -154,26 +201,8 @@ const displayMediaData = (message, data) => {
 };
 
 const displayMediaCharactersData = (message, data) => {
-  const title = data.data.Media.title.romaji;
   const characters = data.data.Media.characters.nodes;
 
-  const embed = new Discord.MessageEmbed()
-    .setColor("#0099ff")
-    .setAuthor(
-      "AniList",
-      "https://anilist.co/favicon.ico",
-      "https://anilist.co/"
-    )
-    .setTitle(title)
-    .addFields(
-      characters.map((character) => {
-        return {
-          name: character.name.full,
-          value: character.favourites,
-          inline: true,
-        };
-      })
-    );
   var embeds = [];
   characters.map((character) => {
     if (character.favourites >= minFavesToDisplayChar)
@@ -185,9 +214,7 @@ const displayMediaCharactersData = (message, data) => {
       );
   });
 
-  embeds.forEach((embed) => {
-    message.channel.send(embed);
-  });
+  embeds.forEach((embed) => message.channel.send(embed));
 };
 
 const displayErrorMessage = (message, error) => {

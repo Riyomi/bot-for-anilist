@@ -5,49 +5,59 @@ const { parseArgs } = require("./utils");
 
 const client = new Discord.Client();
 
-// this should be imported from a different module
+//TODO: add airing anime command
+
+//TODO: this should be imported from a different module
 const commands = [
   {
     command: "help",
     execute: help,
-    description: "Lists all the available commands",
+    description: "lists all available commands",
   },
   {
     command: "character",
     execute: functions.characterQuery,
-    description: "Gives information about a character",
+    description: "information about a character",
   },
   {
     command: "user",
     execute: functions.userQuery,
-    description: "Gives information about a user and their favorites",
+    description: "information about a user",
+  },
+  {
+    command: "user-faves",
+    execute: functions.userFavesQuery,
+    description: "favorite anime, manga and characters of a user",
   },
   {
     command: "anime",
     execute: functions.animeQuery,
-    description: "Gives information about an anime",
+    description: "information about an anime",
   },
   {
     command: "manga",
     execute: functions.mangaQuery,
-    description: "Gives information about a manga",
+    description: "information about a manga",
   },
   {
     command: "anime-c",
     execute: functions.animeCharactersQuery,
-    description:
-      "Lists maximum 5 of the most popular characters of the given anime (the character must be favorited by at least 300 people)",
+    description: "characters of an anime (max. 5, sorted by popularity)",
   },
   {
     command: "manga-c",
     execute: functions.mangaCharactersQuery,
-    description:
-      "Lists maximum 5 of the most popular characters of the given manga (the character must be favorited by at least 300 people)",
+    description: "characters of a manga (max. 5, sorted by popularity)",
   },
 ];
 
+//TODO: this too
+//TODO: format the message (use either a code block or embed)
 function help(message, args) {
-  message.channel.send(commands.map((c) => `!${c.command}: ${c.description}`));
+  const embed = new Discord.MessageEmbed()
+    .setTitle("Available commands")
+    .setDescription(commands.map((c) => `**!${c.command}**: ${c.description}`));
+  message.channel.send(embed);
 }
 
 client.once("ready", () => {

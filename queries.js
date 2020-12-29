@@ -39,7 +39,29 @@ exports.userQuery = `
 query ($name: String) {
   User(search: $name) {
     name
-    bannerImage
+    avatar {
+      medium
+    }
+    statistics{
+      anime {
+        count
+        meanScore
+        episodesWatched
+      }
+      manga {
+        count
+        meanScore
+        chaptersRead
+      }
+    }
+  }
+}
+`;
+
+exports.userFavesQuery = `
+query ($name: String) {
+  User(search: $name) {
+    name
     avatar {
       medium
     }
@@ -62,9 +84,6 @@ query ($name: String) {
         nodes {
           name {
             full
-          },
-          image {
-            medium
           }
         }
       }

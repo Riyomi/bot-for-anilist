@@ -24,6 +24,8 @@ exports.getOptions = (query, variables) => {
 exports.parseArgs = (message) => {
   const arguments = message.content.slice(PREFIX.length).trim().toLowerCase();
 
+  if (arguments.indexOf(" ") == -1) return { command: arguments };
+
   const command = arguments.slice(0, arguments.indexOf(" "));
   const args = arguments.slice(arguments.indexOf(" ")).trim();
 
