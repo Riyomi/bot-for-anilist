@@ -1,15 +1,15 @@
 # Scar - Discord bot for AniList
 
-# Available commands
-!help: list of available commands
-!clear: deletes all bot related messages in the current channel
-!char: information about a character
-!user: information about a user
-!user-f: favorite anime, manga and characters of a user
-!anime: information about an anime
-!manga: information about a manga
-!anime-c: top 10 characters of the given anime sorted by popularity
-!manga-c: top 10 characters of the given manga sorted by popularity
+## Available commands
+> **!help**: list of available commands<br>
+> **!clear**: deletes all bot related messages in the current channel<br>
+> **!char**: information about a character<br>
+> **!user**: information about a user<br>
+> **!user-f**: favorite anime, manga and characters of a user<br>
+> **!anime**: information about an anime<br>
+> **!manga**: information about a manga<br>
+> **!anime-c**: top 10 characters of the given anime sorted by popularity<br>
+> **!manga-c**: top 10 characters of the given manga sorted by popularity<br>
 
 # Sample replies
 ![char](https://i.imgur.com/0Hv4hLV.jpg)
