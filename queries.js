@@ -4,6 +4,7 @@ query ($name: String) {
     name {
       full
     }
+    siteUrl
     image {
       large
     }
@@ -16,6 +17,7 @@ exports.animeQuery = `
 query ($title: String) {
   Media (search: $title, type: ANIME) {
     id
+    siteUrl
     title {
       romaji
     }
@@ -30,6 +32,7 @@ exports.mangaQuery = `
 query ($title: String) {
   Media (search: $title, type: MANGA) {
     id
+    siteUrl
     title {
       romaji
     }

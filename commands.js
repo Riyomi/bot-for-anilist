@@ -3,7 +3,6 @@ const Discord = require("discord.js");
 const queries = require("./queries");
 const { handleResponse, getOptions, convertStringToColor } = require("./utils");
 const _ = require("lodash");
-const { token } = require("./config.json");
 
 const apiUrl = "https://graphql.anilist.co";
 const mediaUrl = "https://img.anili.st/media";
@@ -14,11 +13,7 @@ exports.characterQuery = (message, name) => {
   };
 
   const options = getOptions(queries.characterQuery, variables);
-
-  fetch(apiUrl, options)
-    .then(handleResponse)
-    .then((data) => displayCharacterData(message, data))
-    .catch((error) => displayErrorMessage(message, error));
+  makeApiRequest(message, options, displayCharacterData);
 };
 
 exports.userQuery = (message, name) => {
@@ -27,11 +22,7 @@ exports.userQuery = (message, name) => {
   };
 
   const options = getOptions(queries.userQuery, variables);
-
-  fetch(apiUrl, options)
-    .then(handleResponse)
-    .then((data) => displayUserData(message, data))
-    .catch((error) => displayErrorMessage(message, error));
+  makeApiRequest(message, options, displayUserData);
 };
 
 exports.userFavesQuery = (message, name) => {
@@ -40,15 +31,10 @@ exports.userFavesQuery = (message, name) => {
   };
 
   const options = getOptions(queries.userFavesQuery, variables);
-
-  fetch(apiUrl, options)
-    .then(handleResponse)
-    .then((data) => displayUserFaves(message, data))
-    .catch((error) => displayErrorMessage(message, error));
+  makeApiRequest(message, options, displayUserFaves);
 };
 
 /* Media queries */
-
 exports.animeQuery = (message, title) =>
   this.mediaQuery(message, title, queries.animeQuery);
 
@@ -61,15 +47,10 @@ exports.mediaQuery = (message, title, query) => {
   };
 
   const options = getOptions(query, variables);
-
-  fetch(apiUrl, options)
-    .then(handleResponse)
-    .then((data) => displayMediaData(message, data))
-    .catch((error) => displayErrorMessage(message, error));
+  makeApiRequest(message, options, displayMediaData);
 };
 
 /* Media character queries */
-
 exports.animeCharactersQuery = (message, title, numOfCharacters = 10) =>
   this.mediaCharactersQuery(
     message,
@@ -93,25 +74,18 @@ exports.mediaCharactersQuery = (message, title, query, numOfCharacters) => {
   };
 
   const options = getOptions(query, variables);
-
-  fetch(apiUrl, options)
-    .then(handleResponse)
-    .then((data) => displayMediaCharactersData(message, data))
-    .catch((error) => displayErrorMessage(message, error));
+  makeApiRequest(message, options, displayMediaCharactersData);
 };
 
 const displayCharacterData = (message, data) => {
   const characterInfo = data.data.Character;
   const imageUrl = data.data.Character.image.large;
 
-  const embed = new Discord.MessageEmbed()
-    .setAuthor(
-      "AniList",
-      "https://anilist.co/favicon.ico",
-      "https://anilist.co/"
-    )
+  const embed = getBaseEmbed()
     .setTitle(characterInfo.name.full)
-    .setDescription(`Favorites: ${characterInfo.favourites}`)
+    .setDescription(
+      `Favorites: ${characterInfo.favourites}\n${characterInfo.siteUrl}`
+    )
     .setImage(imageUrl);
 
   message.channel.send(embed);
@@ -124,12 +98,7 @@ const displayUserFaves = (message, data) => {
   const favoriteManga = userInfo.favourites.manga.nodes.slice(0, 5);
   const favoriteCharacters = userInfo.favourites.characters.nodes.slice(0, 5);
 
-  const embed = new Discord.MessageEmbed()
-    .setAuthor(
-      "AniList",
-      "https://anilist.co/favicon.ico",
-      "https://anilist.co/"
-    )
+  const embed = getBaseEmbed()
     .setColor(convertStringToColor(userInfo.options.profileColor))
     .setTitle(userInfo.name)
     .setThumbnail(avatarUrl);
@@ -161,12 +130,7 @@ const displayUserData = (message, data) => {
   const userInfo = data.data.User;
   const avatarUrl = userInfo.avatar.medium;
 
-  const embed = new Discord.MessageEmbed()
-    .setAuthor(
-      "AniList",
-      "https://anilist.co/favicon.ico",
-      "https://anilist.co/"
-    )
+  const embed = getBaseEmbed()
     .setTitle(userInfo.name)
     .setColor(convertStringToColor(userInfo.options.profileColor))
     .setThumbnail(avatarUrl)
@@ -188,13 +152,9 @@ const displayMediaData = (message, data) => {
   const mediaInfo = data.data.Media;
   const imageUrl = `${mediaUrl}/${mediaInfo.id}`;
 
-  const embed = new Discord.MessageEmbed()
+  const embed = getBaseEmbed()
     .setColor(mediaInfo.coverImage.color)
-    .setAuthor(
-      "AniList",
-      "https://anilist.co/favicon.ico",
-      "https://anilist.co/"
-    )
+    .setDescription(mediaInfo.siteUrl)
     .setTitle(mediaInfo.title.romaji)
     .setImage(imageUrl);
 
@@ -205,12 +165,7 @@ const displayMediaCharactersData = (message, data) => {
   const mediaInfo = data.data.Media;
   const characters = data.data.Media.characters.nodes;
 
-  const embed = new Discord.MessageEmbed()
-    .setAuthor(
-      "AniList",
-      "https://anilist.co/favicon.ico",
-      "https://anilist.co/"
-    )
+  const embed = getBaseEmbed()
     .setDescription(
       characters.map(
         (c, index) => `${index + 1}. ${c.name.full} [${c.favourites}]`
@@ -222,8 +177,23 @@ const displayMediaCharactersData = (message, data) => {
   message.channel.send(embed);
 };
 
-const displayErrorMessage = (message, error) => {
+function makeApiRequest(message, options, displayData) {
+  fetch(apiUrl, options)
+    .then(handleResponse)
+    .then((data) => displayData(message, data))
+    .catch((error) => displayErrorMessage(message, error));
+}
+
+function getBaseEmbed() {
+  return new Discord.MessageEmbed().setAuthor(
+    "AniList",
+    "https://anilist.co/favicon.ico",
+    "https://anilist.co/"
+  );
+}
+
+function displayErrorMessage(message, error) {
   message.channel.send(
     error.errors[0] ? error.errors[0].message : "An error occured."
   );
-};
+}

@@ -7,7 +7,7 @@ exports.handleResponse = (response) => {
 };
 
 exports.getOptions = (query, variables) => {
-  const options = {
+  return {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -18,7 +18,6 @@ exports.getOptions = (query, variables) => {
       variables: variables,
     }),
   };
-  return options;
 };
 
 exports.parseArgs = (message) => {
@@ -37,7 +36,7 @@ exports.convertStringToColor = (color) => {
 
   if (color.match(hexRegex)) return color;
 
-  colors = [
+  const colors = [
     { name: "blue", value: "#3db4f2" },
     { name: "purple", value: "#c063ff" },
     { name: "green", value: "#4cca51" },
@@ -49,3 +48,5 @@ exports.convertStringToColor = (color) => {
 
   return colors.find((c) => c.name === color).value;
 };
+
+exports.PREFIX = PREFIX;

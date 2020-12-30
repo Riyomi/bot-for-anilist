@@ -1,11 +1,24 @@
 const Discord = require("discord.js");
 const { token } = require("./config.json");
 const functions = require("./commands");
-const { parseArgs } = require("./utils");
+const { parseArgs, PREFIX } = require("./utils");
 
 const client = new Discord.Client();
 
-// this shouldn't be here
+client.once("ready", () => {
+  console.log("Ready!");
+});
+
+client.on("message", async (message) => {
+  const { command, args } = parseArgs(message);
+
+  commands.find((c) => {
+    if (c.command === command) c.execute(message, args);
+  });
+});
+
+client.login(token);
+
 const commands = [
   {
     command: "help",
@@ -54,7 +67,6 @@ const commands = [
   },
 ];
 
-// this shouldn't be here
 function help(message, args) {
   const embed = new Discord.MessageEmbed()
     .setTitle("Available commands")
@@ -62,26 +74,11 @@ function help(message, args) {
   message.channel.send(embed);
 }
 
-// this shouldn't be here
 async function clearAll(message, args) {
   const fetchedMessages = await message.channel.messages.fetch({ limit: 100 });
   const messagesForDeletion = fetchedMessages.filter(
-    (m) => m.content.startsWith("!") || m.author.id === client.user.id
+    (m) => m.content.startsWith(PREFIX) || m.author.id === client.user.id
   );
 
   message.channel.bulkDelete(messagesForDeletion);
 }
-
-client.once("ready", () => {
-  console.log("Ready!");
-});
-
-client.on("message", async (message) => {
-  const { command, args } = parseArgs(message);
-
-  commands.find((c) => {
-    if (c.command === command) c.execute(message, args);
-  });
-});
-
-client.login(token);
