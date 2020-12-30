@@ -22,4 +22,4 @@
 
 ## Limitations & known issues
 - Due to the way AniList's search works, not providing concrete enough keywords might prompt completely unrelated results.<br>
-- When there's a more popular character with the same name, finding the less popular character(s) might not always be possible
+- When there's a more popular character with the same name, finding the less popular character(s) may not always be possible with the current implementation.
