@@ -19,3 +19,7 @@
 ![manga](https://i.imgur.com/ajlQ2nY.jpg)
 ![anime-c](https://i.imgur.com/xzAmJYe.jpg)
 ![manga-c](https://i.imgur.com/bt1IXLM.jpg)
+
+## Limitations & known issues
+- Due to the way AniList's search works, not providing concrete enough keywords might prompt completely unrelated results.<br>
+- When there's a more popular character with the same name, finding the less popular character(s) might not always be possible
