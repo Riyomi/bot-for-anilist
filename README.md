@@ -12,13 +12,7 @@
 > **!manga-c**: top 10 characters of the given manga sorted by popularity<br>
 
 ## Sample replies
-![char](https://i.imgur.com/0Hv4hLV.jpg)
-![user](https://i.imgur.com/RNw6cFX.jpg)
-![user-f](https://i.imgur.com/rSQF8bG.jpg)
-![anime](https://i.imgur.com/BU1J8bk.jpg)
-![manga](https://i.imgur.com/ajlQ2nY.jpg)
-![anime-c](https://i.imgur.com/xzAmJYe.jpg)
-![manga-c](https://i.imgur.com/bt1IXLM.jpg)
+![sample replies](https://i.imgur.com/bmHGfBR.jpg)
 
 ## Limitations & known issues
 - Due to the way AniList's search works, not providing concrete enough keywords might prompt completely unrelated results.<br>
