@@ -11,7 +11,7 @@
 > **!anime-c**: top 10 characters of the given anime sorted by popularity<br>
 > **!manga-c**: top 10 characters of the given manga sorted by popularity<br>
 
-# Sample replies
+## Sample replies
 ![char](https://i.imgur.com/0Hv4hLV.jpg)
 ![user](https://i.imgur.com/RNw6cFX.jpg)
 ![user-f](https://i.imgur.com/rSQF8bG.jpg)
