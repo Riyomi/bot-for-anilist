@@ -1,9 +1,9 @@
 const Discord = require("discord.js");
-const { token } = require("./config.json");
 const functions = require("./commands");
 const { parseArgs, PREFIX } = require("./utils");
 
 const client = new Discord.Client();
+const token = process.env.TOKEN;
 
 client.once("ready", () => {
   console.log("Ready!");
