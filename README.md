@@ -11,9 +11,6 @@
 > **!anime-c**: top 10 characters of the given anime sorted by popularity<br>
 > **!manga-c**: top 10 characters of the given manga sorted by popularity<br>
 
-## Sample replies
-![sample replies](https://i.imgur.com/bmHGfBR.jpg)
-
 ## Limitations & known issues
 - Due to the way AniList's search works, not providing concrete enough keywords might prompt completely unrelated results.<br>
 - When there's a more popular character with the same name, finding the less popular character(s) may not always be possible with the current implementation.
